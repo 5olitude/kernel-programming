@@ -1,2 +1,16 @@
 #to get the list of maintainers in opensource liniux kernel modules
-./scripts/get_maintainer.pl --nogit -f kernel/sched
+
+   ./scripts/get_maintainer.pl --nogit -f kernel/sched
+
+# Linux Arch CPU ports 
+
+    ls arch;
+
+# io_uring 
+
+   newish feature for improving the i/o operations (for both network and the disk operations)
+
+# rust why loaded into the kernel module ?
+
+   1) Memory safety compared to C 
+   2) preventing buffer overflow 
