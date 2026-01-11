@@ -64,3 +64,6 @@ Final linking & output
    → vmlinux (uncompressed kernel image)
    → bzImage / zImage / Image.gz (compressed bootable image, arch-specific)
    → modules (if any CONFIG_*=m)
+
+
+# make mrproper = "make the kernel source tree Mr. Proper clean" (like the old cleaning product ad) → nuke almost everything except the original source code itself.
