@@ -14,3 +14,53 @@
 
    1) Memory safety compared to C 
    2) preventing buffer overflow 
+
+# Kernel config root map
+
+  Kconfig -> make menu config -> mconf(parse configd ,merge) -> .config -> syncconfig -> Generate Headers -> kbuild -> Top level Make file(arch and  scripts (make file)-> packages(block,certs,crypto)
+Kconfig files
+   (tree of configuration definitions across the kernel source)
+         ↓
+make menuconfig   (or oldconfig / defconfig / ... )
+   → uses mconf (ncurses-based tool from scripts/kconfig/)
+         ↓
+User interactively selects options
+   (resolves dependencies, visibility, defaults, selects/implies)
+         ↓
+.config file is (re)written / updated
+   (human-readable key-value file: CONFIG_FOO=y / =m / is not set)
+         ↓
+make syncconfig   (formerly silentoldconfig)
+   → internal step (usually auto-run by make)
+   → validates .config against current Kconfig tree
+   → resolves new/renamed/removed symbols
+   → updates dependencies
+   → generates additional helper files:
+         • include/config/auto.conf
+         • include/config/tristate.conf
+         • include/generated/autoconf.h   ← most important!
+         • many empty stub headers in include/config/* for dependency tracking
+         ↓
+Generated Headers ready
+   (autoconf.h contains #define CONFIG_FOO 1 style macros for C preprocessor)
+         ↓
+kbuild system takes over
+   (the recursive make-based build infrastructure)
+         ↓
+Top-level Makefile (root of kernel source)
+   ├─ includes arch/$(ARCH)/Makefile           (arch-specific settings, flags, libs-y, core-y …)
+   ├─ includes scripts/Makefile.*              (common kbuild rules, macros, cc-option probes etc.)
+   └─ orchestrates recursive descent into subdirectories
+         ↓
+Subdirectory Makefiles (kbuild Makefiles)
+   • Use obj-$(CONFIG_FOO) += foo.o
+   • Use obj-$(CONFIG_BAR) += bar/
+   • Decide what gets built as built-in (=y), module (=m), or skipped
+   • Produce:
+     - built-in.a archives (for linking into vmlinux)
+     - .ko module files
+         ↓
+Final linking & output
+   → vmlinux (uncompressed kernel image)
+   → bzImage / zImage / Image.gz (compressed bootable image, arch-specific)
+   → modules (if any CONFIG_*=m)
